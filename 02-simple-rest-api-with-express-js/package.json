@@ -8,13 +8,14 @@
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "OluSmartDev",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "nodemon": "^3.1.10"
   },
   "dependencies": {
+    "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "uuid": "^11.1.0"
   }
