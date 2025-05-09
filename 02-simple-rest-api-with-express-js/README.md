@@ -10,6 +10,18 @@ This is a simple RESTful API for managing items in an in-memory storage. The API
 
 ---
 
+## 🚀 Features
+
+- Retrieve all items
+- Create a new item
+- Retrieve a single item by ID
+- Update an existing item
+- Delete an item by ID
+- Input validation using `express-validator`
+- Error handling for 404 and 500 responses
+
+---
+
 ## 🛠️ Setup Instructions
 
 ### Prerequisites
