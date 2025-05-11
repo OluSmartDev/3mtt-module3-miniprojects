@@ -1,5 +1,17 @@
 import express from "express";
+import {Client} from "pg";
 // import itemsRouter from "./routes/usersRouter.js";
+
+const con = new Client({
+    host: "localhost",
+    port: 5432,
+    user: "3mtt-admin",
+    password: "3mtt-admin",
+    database: "3mtt-mini-project3"
+});
+
+con.connect().then(() => console.log("Connected to database successfully"));
+
 const app = express();
 const PORT = 5000;
 
