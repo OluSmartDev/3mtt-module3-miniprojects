@@ -1,8 +1,8 @@
 import express from "express";
 import {Client} from "pg";
-// import itemsRouter from "./routes/usersRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 
-const con = new Client({
+ export const con = new Client({
     host: "localhost",
     port: 5432,
     user: "3mtt-admin",
@@ -17,7 +17,7 @@ const PORT = 5000;
 
 app.use(express.json());
 
-// app.use('/items', usersRouter)
+app.use('/users', usersRouter)
 
 app.get('/', (req, res) => res.send("Hello, World!"));
 
