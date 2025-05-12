@@ -28,7 +28,7 @@ The handlers's logic for the routes that are defined in the `usersRouter.js` fil
 
 ### Step-by-step Guide
 
-1. **Clone the repository** (if applicable):
+1. **Clone the repository**:
    ```
    git clone https://github.com/OluSmartDev/3mtt-module3-miniprojects.git
    cd 3mtt-module3-miniprojects/03-store-and-retrieve-data-in-postgresql
