@@ -61,16 +61,14 @@ The handlers's logic for the routes that are defined in the `usersRouter.js` fil
 
 4. **Update database credentials if needed**:
 
-   Open `index.js` and ensure the `Client` configuration matches your PostgreSQL setup:
+   Create a `.env` file in the project's root folder and ensure the  configuration values match your PostgreSQL setup:
 
    ```js
-   export const con = new Client({
-     host: "localhost",
-     port: 5432,
-     user: "3mtt-admin",
-     password: "3mtt-admin",
-     database: "3mtt-mini-project3"
-   });
+    DB_SERVER="localhost"
+    DB_PORT=5432
+    DB_NAME="YOUR_DATABASE_NAME"
+    DB_USER="YOUR_DATABASE_USERNAME"
+    DB_PASSWORD="YOUR_DATABASE_PASSWORD"
    ```
 
 5. **Start the server**:
@@ -292,6 +290,8 @@ All routes implement consistent error handling:
 ```
 project-root/
 ├── index.js
+├── utils/
+│   └── dbconnect.js
 ├── routes/
 │   └── usersRouter.js
 ├── controllers/
