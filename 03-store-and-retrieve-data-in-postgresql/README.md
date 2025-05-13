@@ -59,7 +59,7 @@ The handlers's logic for the routes that are defined in the `usersRouter.js` fil
    );
    ```
 
-4. **Update database credentials if needed**:
+4. **Configure database credentials**:
 
    Create a `.env` file in the project's root folder and ensure the  configuration values match your PostgreSQL setup:
 
