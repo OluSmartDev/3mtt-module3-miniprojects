@@ -1,4 +1,40 @@
 import { con } from "../utils/dbconnect.js"; //import database client
+import {param, body, validationResult} from 'express-validator';
+
+// --- Helper function to validate param using express-validator ---
+export const paramValidator = (propertyName) => {
+  return param(propertyName).isInt({ min: 1 }).withMessage(`${propertyName} must be a positive integer`);
+}
+
+// --- Helper function to to validate optional body inputs using express-validator ---
+export const bodyValidator = (propertyName) => {
+  return body(propertyName).isString().trim().escape();
+}
+
+// --- Helper function to to validate required body inputs using express-validator ---
+export const bodyValidatorRequired = (propertyName) => {
+  return body(propertyName).notEmpty().withMessage(`${propertyName} is required`).isString().trim().escape();
+}
+
+// --- Helper function to validate positive integers using express-validator ---
+export const integerValidator = (propertyName) => {
+  return body(propertyName).isInt({ min: 1 }).withMessage(`${propertyName} must be a positive integer`);
+}
+
+// --- Helper function to validate required positive integers using express-validator ---
+export const integerValidatorRequired = (propertyName) => {
+  return body(propertyName).notEmpty().withMessage(`${propertyName} is required`).isInt({ min: 1 }).withMessage(`${propertyName} must be a positive integer`);
+}
+
+// --- Helper function to validate email addresses using express-validator ---
+export const emailValidator = (propertyName) => {
+  return body(propertyName).notEmpty().withMessage(`${propertyName} is required`).isEmail().withMessage(`Invalid ${propertyName} format`).trim().normalizeEmail();
+}
+
+// --- Helper function to validate required email addresses using express-validator ---
+export const emailValidatorRequired = (propertyName) => {
+  return body(propertyName).notEmpty().withMessage(`${propertyName} is required`).isEmail().withMessage(`Invalid ${propertyName} format`).trim().normalizeEmail();
+}
 
 // --- Helper function to handle errors ---
 const handleError = (res, status, message, details = null) => {
@@ -29,7 +65,13 @@ export const getUsers = async (req, res) => {
 
 // --- Retrieve a single User by ID ---
 export const getUser = async (req, res) => {
-  try {
+    const errors = validationResult(req);
+  
+      if (!errors.isEmpty()) {
+          return handleError(res, 400, 'Invalid request parameters', errors.array());
+      }
+
+   try {
     const { id } = req.params;
     const fetch_query = `SELECT * FROM users WHERE id = $1`;
     const result = await con.query(fetch_query, [id]);
@@ -50,6 +92,13 @@ export const getUser = async (req, res) => {
 
 // --- Create a new User ---
 export const createUser = async (req, res) => {
+ 
+  const errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+      return handleError(res, 400, 'Invalid request body', errors.array());
+  }
+
   try {
     const { name, email, age } = req.body;
     const insert_query = `INSERT INTO users (name, email, age) VALUES ($1, $2, $3) RETURNING *`;
@@ -67,6 +116,17 @@ export const createUser = async (req, res) => {
 // --- Update a User by ID ---
 export const updateUser = async (req, res) => {
   try {
+
+    const paramErrors = validationResult(req);
+    if (!paramErrors.isEmpty()) {
+        return handleError(res, 400, 'Invalid request parameters', paramErrors.array());
+    }
+
+    const bodyErrors = validationResult(req);
+    if (!bodyErrors.isEmpty()) {
+        return handleError(res, 400, 'Invalid request body', bodyErrors.array());
+    }
+
     const { id } = req.params;
     if (req.body === undefined) {
        return handleError(res, 500, `request body cannot be undefined`);
@@ -118,6 +178,13 @@ export const updateUser = async (req, res) => {
 
 // --- Delete a User by ID---
 export const deleteUser = async (req, res) => {
+
+  const errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+      return handleError(res, 400, 'Invalid request parameters');
+  }
+
   try {
     const { id } = req.params;
 

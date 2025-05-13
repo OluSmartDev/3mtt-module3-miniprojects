@@ -1,16 +1,16 @@
 import express from "express";
-import { getUsers, getUser, createUser, updateUser, deleteUser } from "../controllers/usersController.js";
+import { getUsers, getUser, createUser, updateUser, deleteUser, paramValidator, bodyValidator, bodyValidatorRequired, emailValidator, emailValidatorRequired, integerValidator, integerValidatorRequired } from "../controllers/usersController.js";
 
 const router = express.Router();
 
 router.get('/', getUsers)
 
-router.get('/:id', getUser)
+router.get('/:id', paramValidator('id'), getUser)
 
-router.post('/', createUser)
+router.post('/', bodyValidatorRequired('name'), emailValidatorRequired('email'), integerValidatorRequired('age'), createUser)
 
-router.put('/:id', updateUser)
+router.put('/:id', bodyValidator('name'), emailValidator('email'), integerValidator('age'), updateUser)
 
-router.delete('/:id', deleteUser)
+router.delete('/:id', paramValidator('id'), deleteUser)
 
 export default router;
