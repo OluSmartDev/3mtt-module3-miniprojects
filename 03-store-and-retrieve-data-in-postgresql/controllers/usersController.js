@@ -1,4 +1,4 @@
-import { con } from "../index.js"
+import { con } from "../utils/dbconnect.js"; //import database client
 
 // --- Helper function to handle errors ---
 const handleError = (res, status, message, details = null) => {
@@ -13,11 +13,13 @@ export const getUsers = async (req, res) => {
         const fetch_query = "SELECT * FROM users"
         const result = await con.query(fetch_query);
 
+        // Check if no users are found 
         if (result.rows.length === 0) {
-        return res.json({"message": "No user is found. The table is empty!"});
+        return handleError(res, 404, "No user is found. The table is empty!");
         }
 
-        res.json(result.rows);
+        console.log(`All Users retrieved successfully`);
+        res.status(200).json(result.rows);
 
     } catch (err) {
         console.error("Error fetching users:", err);
@@ -37,7 +39,8 @@ export const getUser = async (req, res) => {
       return handleError(res, 404, `User with ID ${id} not found`);
     }
 
-    res.json(result.rows);
+    console.log(`Single User retrieved successfully`);
+    res.status(200).json(result.rows);
     
   } catch (err) {
     console.error("Error fetching user:", err);
@@ -49,10 +52,12 @@ export const getUser = async (req, res) => {
 export const createUser = async (req, res) => {
   try {
     const { name, email, age } = req.body;
-    const insert_query = "INSERT INTO users (name, email, age) VALUES ($1, $2, $3)";
+    const insert_query = `INSERT INTO users (name, email, age) VALUES ($1, $2, $3) RETURNING *`;
     const result = await con.query(insert_query, [name, email, age]);
-    res.json(result.rows);
+
     console.log("New User Added to Database Successfully");
+    res.status(201).json(result.rows);
+
   } catch (err) {
     console.error(err);
     res.status(500).send(err.message || "An error occurred while adding the user.");
@@ -63,6 +68,10 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
+    if (req.body === undefined) {
+       return handleError(res, 500, `request body cannot be undefined`);
+    }
+
     const { name, email, age } = req.body;
 
     // Check if the user with the given ID exists
@@ -70,7 +79,7 @@ export const updateUser = async (req, res) => {
     const check_result = await con.query(check_query, [id]);
 
     if (check_result.rows.length === 0) {
-      return res.status(404).send(`User with ID ${id} not found.`);
+      return handleError(res, 404, `User with ID ${id} not found`);
     }
 
     // avoid situations where fields that are not updated (i.e. undefined) are automatically given null values in the database
@@ -92,15 +101,15 @@ export const updateUser = async (req, res) => {
     }
 
     if (updates.length === 0) {
-      return res.status(400).send("At least one field (name, email, or age) must be provided for update.");
+      return handleError(res, 404, "At least one field (name, email, or age) must be provided for update.");
     }
 
-    const update_query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount}`;
+    const update_query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
     values.push(id);
     const result = await con.query(update_query, values);
 
-    console.log(result);
-    res.send("Database updated successfully!");
+    console.log("Database updated successfully!");
+    res.status(200).json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).send(err.message || "An error occurred while updating the user.");
@@ -117,18 +126,15 @@ export const deleteUser = async (req, res) => {
     const check_result = await con.query(check_query, [id]);
 
     if (check_result.rows.length === 0) {
-      return res.status(404).send(`User with ID ${id} not found.`);
+      return handleError(res, 404, `User with ID ${id} not found`);
     }
     
     const delete_query = `DELETE FROM users WHERE id = $1`;
     const result = await con.query(delete_query, [id]);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ message: `User with ID ${id} not found.` });
-    }
-
-    console.log(result);
+    console.log(`User with ID ${id} has been successfully deleted`);
     res.json({ message: `User with ID ${id} has been successfully deleted` });
+
   } catch (err) {
     console.error(err);
     res.status(500).send(err.message || "An error occurred while deleting the user.");

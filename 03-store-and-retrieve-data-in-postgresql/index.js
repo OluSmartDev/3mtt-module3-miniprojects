@@ -1,23 +1,15 @@
 import express from "express";
-import {Client} from "pg";
-// import itemsRouter from "./routes/usersRouter.js";
+import { connectToDatabase } from "./utils/dbconnect.js";
+import usersRouter from "./routes/usersRouter.js";
 
-const con = new Client({
-    host: "localhost",
-    port: 5432,
-    user: "3mtt-admin",
-    password: "3mtt-admin",
-    database: "3mtt-mini-project3"
-});
-
-con.connect().then(() => console.log("Connected to database successfully"));
+connectToDatabase();
 
 const app = express();
 const PORT = 5000;
 
 app.use(express.json());
 
-// app.use('/items', usersRouter)
+app.use('/users', usersRouter)
 
 app.get('/', (req, res) => res.send("Hello, World!"));
 
